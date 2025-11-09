@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3000;
@@ -25,6 +25,56 @@ app.get('/', (req, res) => {
 async function run() {
     try {
         await client.connect();
+
+        const db = client.db('eco_track_db');
+        const challengesCollection = db.collection('challenges');
+
+        // CHALLENGES RELATED API
+        app.get('/challenges', async (req, res) => {
+            const createdBy = req.query.createdBy;
+            const query = {};
+
+            if (createdBy) {
+                query.createdBy = createdBy;
+            }
+
+            const cursor = challengesCollection.find(query).sort({ startDate: -1 });
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get('/challenges/:id', async (req, res) => {
+            const id = req.params.id;
+            const qurey = { _id: new ObjectId(id) };
+            const result = await challengesCollection.findOne(qurey);
+            res.send(result);
+        })
+
+        app.post('/challenges', async (req, res) => {
+            const newChallenge = req.body;
+            const result = await challengesCollection.insertOne(newChallenge);
+            res.send(result);
+        })
+
+        app.patch('/challenges/:id', async (req, res) => {
+            const id = req.params.id;
+            const updatedChallenge = req.body;
+            const qurey = { _id: new ObjectId(id) };
+            const update = {
+                $set: updatedChallenge,
+            }
+            const options = {};
+            const result = await challengesCollection.updateOne(qurey, update, options);
+            res.send(result);
+        })
+
+        app.delete('/challenges/:id', async (req, res) => {
+            const id = req.params.id;
+            const qurey = { _id: new ObjectId(id) };
+            const result = await challengesCollection.deleteOne(qurey);
+            res.send(result);
+        })
+
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {

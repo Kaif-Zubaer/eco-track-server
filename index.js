@@ -28,14 +28,15 @@ async function run() {
 
         const db = client.db('eco_track_db');
         const challengesCollection = db.collection('challenges');
+        const tipsCollection = db.collection('tips');
 
         // CHALLENGES RELATED API
         app.get('/challenges', async (req, res) => {
-            const createdBy = req.query.createdBy;
+            const email = req.query.email;
             const query = {};
 
-            if (createdBy) {
-                query.createdBy = createdBy;
+            if (email) {
+                query.createdBy = email;
             }
 
             const cursor = challengesCollection.find(query).sort({ startDate: -1 });
@@ -72,6 +73,20 @@ async function run() {
             const id = req.params.id;
             const qurey = { _id: new ObjectId(id) };
             const result = await challengesCollection.deleteOne(qurey);
+            res.send(result);
+        })
+
+        // TIPS RELATED API
+        app.get('/tips', async (req, res) => {
+            const email = req.query.email;
+            const query = {};
+
+            if (email) {
+                query.author = email;
+            }
+
+            const cursor = tipsCollection.find(query).sort({ createdAt: -1 });
+            const result = await cursor.toArray();
             res.send(result);
         })
 

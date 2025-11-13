@@ -30,8 +30,9 @@ async function run() {
         const challengesCollection = db.collection('challenges');
         const tipsCollection = db.collection('tips');
         const eventsCollection = db.collection('events');
-        const howItWorksStepsCollection = db.collection('how_it_works_steps')
+        const howItWorksStepsCollection = db.collection('how_it_works_steps');
         const usersCollection = db.collection('users');
+        const userChallengesCollection = db.collection('user_challenges');
 
         // USER REELATED API
         app.get('/users', async (req, res) => {
@@ -98,6 +99,26 @@ async function run() {
             const id = req.params.id;
             const qurey = { _id: new ObjectId(id) };
             const result = await challengesCollection.deleteOne(qurey);
+            res.send(result);
+        })
+
+        // USER CHALLENGES RELATED API
+        app.get('/user_challenges', async (req, res) => {
+            const email = req.query.email;
+            const query = {};
+
+            if (email) {
+                query.userId = email;
+            }
+
+            const cursor = userChallengesCollection.find(query).sort({ startDate: -1 });
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.post('/user_challenges', async (req, res) => {
+            const newUserChallenge = req.body;
+            const result = await userChallengesCollection.insertOne(newUserChallenge);
             res.send(result);
         })
 

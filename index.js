@@ -31,6 +31,29 @@ async function run() {
         const tipsCollection = db.collection('tips');
         const eventsCollection = db.collection('events');
         const howItWorksStepsCollection = db.collection('how_it_works_steps')
+        const usersCollection = db.collection('users');
+
+        // USER REELATED API
+        app.get('/users', async (req, res) => {
+            const cursor = usersCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.post('/users', async (req, res) => {
+            const newUser = req.body;
+            const email = req.body.email;
+            const query = { email: email };
+            const existingUser = await usersCollection.findOne(query);
+
+            if (existingUser) {
+                res.send({ message: 'USER ALREADY EXITS' })
+            }
+            else {
+                const result = await usersCollection.insertOne(newUser);
+                res.send(result);
+            }
+        })
 
         // CHALLENGES RELATED API
         app.get('/challenges', async (req, res) => {

@@ -24,7 +24,7 @@ app.get('/', (req, res) => {
 
 async function run() {
     try {
-        await client.connect();
+        // await client.connect();
 
         const db = client.db('eco_track_db');
         const challengesCollection = db.collection('challenges');

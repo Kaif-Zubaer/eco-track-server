@@ -117,10 +117,21 @@ async function run() {
         })
 
         app.post('/user_challenges', async (req, res) => {
-            const newUserChallenge = req.body;
-            const result = await userChallengesCollection.insertOne(newUserChallenge);
-            res.send(result);
-        })
+            try {
+                const newUserChallenge = req.body;
+                const result = await userChallengesCollection.insertOne(newUserChallenge);
+
+                await challengesCollection.updateOne(
+                    { _id: new ObjectId(newUserChallenge.challengeId) },
+                    { $inc: { participants: 1 } }
+                );
+
+                res.send({ success: true, insertedId: result.insertedId });
+            } catch (error) {
+                console.error(error);
+                res.status(500).send({ success: false, error: 'Failed to join challenge' });
+            }
+        });
 
         // TIPS RELATED API
         app.get('/tips', async (req, res) => {
@@ -157,7 +168,7 @@ async function run() {
             res.send(result);
         })
 
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
 

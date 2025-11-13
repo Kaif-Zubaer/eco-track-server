@@ -30,6 +30,7 @@ async function run() {
         const challengesCollection = db.collection('challenges');
         const tipsCollection = db.collection('tips');
         const eventsCollection = db.collection('events');
+        const howItWorksStepsCollection = db.collection('how_it_works_steps')
 
         // CHALLENGES RELATED API
         app.get('/challenges', async (req, res) => {
@@ -101,6 +102,13 @@ async function run() {
             }
 
             const cursor = eventsCollection.find(query).sort({ date: -1 });
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        // HOW IT WORKS STEPS RELATED API
+        app.get('/how_it_works_steps', async (req, res) => {
+            const cursor = howItWorksStepsCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })

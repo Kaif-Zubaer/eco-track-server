@@ -55,6 +55,31 @@ EcoTrack is a community-driven platform that encourages eco-conscious individual
 
 ---
 
+## Installation
+
+Clone the repo and install dependencies:
+
+```
+https://github.com/Kaif-Zubaer/eco-track-server.git
+cd eco-track-server
+npm install
+```
+
+Set up environment variables by creating a `.env` file in the root directory:
+
+```
+DB_USER=your_database_user
+DB_PASS=your_database_pass
+```
+
+Run the application:
+
+```
+npm run dev
+```
+
+---
+
 ## GitHub Repositories
 
 - **Client:** [Github Client Repo URL Here](https://github.com/Kaif-Zubaer/eco-track-client) 
